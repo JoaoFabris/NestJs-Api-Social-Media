@@ -15,16 +15,9 @@ export class AuthService {
   // Chamado pela LocalStrategy no login
   async validateUser(email: string, password: string): Promise<User | null> {
     try {
-      console.log("=== validateUser chamado ===");
-      console.log("email recebido:", email);
-      console.log("password recebido:", password);
-
       const user = await this.usersService.findByEmail(email);
-      console.log("usuário encontrado:", user ? "SIM" : "NÃO");
-      console.log("password no banco:", user?.password);
 
       const passwordMatch = await bcrypt.compare(password, user.password);
-      console.log("senha confere:", passwordMatch);
 
       if (!passwordMatch) return null;
 
