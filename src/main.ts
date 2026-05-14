@@ -8,6 +8,12 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors({
+    origin: "*", // em produção vai trocar pelo domínio do front
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  });
+
   // Prefixo global para todas as rotas: /api/v1/...
   app.setGlobalPrefix("api/v1");
 
