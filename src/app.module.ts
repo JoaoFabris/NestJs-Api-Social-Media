@@ -8,32 +8,28 @@ import { LikesModule } from "./likes/likes.module";
 import { CommentsModule } from "./comments/comments.module";
 import { FollowsModule } from "./follows/follows.module";
 import { FeedModule } from "./feed/feed.module";
+import { envValidationSchema } from "./config/env.validation";
+import { dataSourceOptions } from "./config/typeorm.config";
 
 @Module({
   imports: [
-    // 1. Carrega o .env globalmente em toda a aplicação
     ConfigModule.forRoot({
       isGlobal: true,
+      validationSchema: envValidationSchema,
+      validationOptions: {
+        abortEarly: true,
+      },
     }),
 
-    // 2. Conecta ao banco usando as variáveis do .env
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      // Factory que monta a configuração do banco
       useFactory: (config: ConfigService) => ({
-        type: "postgres",
-        host: config.get("DB_HOST"),
-        port: config.get<number>("DB_PORT"),
-        username: config.get("DB_USERNAME"),
-        password: config.get("DB_PASSWORD"),
-        database: config.get("DB_NAME"),
-        entities: [__dirname + "/**/*.entity{.ts,.js}"],
-        synchronize: true, // apenas em desenvolvimento!
-        // synchronize: true faz o TypeORM criar/atualizar as tabelas automaticamente. I
-        // sso é útil em desenvolvimento, mas em produção vamos usar migrations.
+        ...dataSourceOptions, // ← reutiliza a config base
+        synchronize: config.get("NODE_ENV") === "development",
       }),
     }),
+
     UsersModule,
     AuthModule,
     PostsModule,
