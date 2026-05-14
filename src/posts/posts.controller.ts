@@ -10,12 +10,14 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  Query,
 } from "@nestjs/common";
 
 import { PostsService } from "./posts.service";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { UpdatePostDto } from "./dto/update-post.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { PaginationDto } from "src/common/dto/pagination.dto";
 
 @Controller("posts")
 @UseGuards(JwtAuthGuard) // todas as rotas de posts exigem login
@@ -31,8 +33,8 @@ export class PostsController {
 
   // GET /api/v1/posts
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.postsService.findAll(paginationDto);
   }
 
   // GET /api/v1/posts/:id

@@ -4,6 +4,8 @@ import { Repository, In } from "typeorm";
 
 import { Post } from "../posts/entities/post.entity";
 import { FollowsService } from "../follows/follows.service";
+import { PaginationDto } from "../common/dto/pagination.dto";
+import { PaginatedResponseDto } from "../common/dto/paginated-response.dto";
 
 @Injectable()
 export class FeedService {
@@ -13,18 +15,27 @@ export class FeedService {
     private readonly followsService: FollowsService,
   ) {}
 
-  async getFeed(userId: string): Promise<Post[]> {
-    // busca os IDs de todos que o usuário segue
+  async getFeed(
+    userId: string,
+    paginationDto: PaginationDto,
+  ): Promise<PaginatedResponseDto<Post>> {
+    const { page, limit } = paginationDto;
+    const skip = (page - 1) * limit; // ex: página 2 com limit 10 → skip 10
+
     const followingIds = await this.followsService.findFollowingIds(userId);
 
-    // se não segue ninguém retorna feed vazio
-    if (followingIds.length === 0) return [];
+    if (followingIds.length === 0) {
+      return new PaginatedResponseDto([], 0, page, limit);
+    }
 
-    // busca posts apenas dessas pessoas
-    return this.postsRepository.find({
+    const [posts, total] = await this.postsRepository.findAndCount({
       where: { authorId: In(followingIds) },
       relations: ["author"],
       order: { createdAt: "DESC" },
+      skip,
+      take: limit,
     });
+
+    return new PaginatedResponseDto(posts, total, page, limit);
   }
 }

@@ -9,6 +9,8 @@ import { Repository } from "typeorm";
 import { Post } from "./entities/post.entity";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { UpdatePostDto } from "./dto/update-post.dto";
+import { PaginatedResponseDto } from "src/common/dto/paginated-response.dto";
+import { PaginationDto } from "src/common/dto/pagination.dto";
 
 @Injectable()
 export class PostsService {
@@ -34,11 +36,20 @@ export class PostsService {
   }
 
   // ─── Listar todos (feed global) ───────────────────────────────
-  async findAll(): Promise<Post[]> {
-    return this.postsRepository.find({
-      relations: ["author"], // carrega os dados do autor junto
-      order: { createdAt: "DESC" }, // mais recentes primeiro
+  async findAll(
+    paginationDto: PaginationDto,
+  ): Promise<PaginatedResponseDto<Post>> {
+    const { page, limit } = paginationDto;
+    const skip = (page - 1) * limit;
+
+    const [posts, total] = await this.postsRepository.findAndCount({
+      relations: ["author"],
+      order: { createdAt: "DESC" },
+      skip,
+      take: limit,
     });
+
+    return new PaginatedResponseDto(posts, total, page, limit);
   }
 
   // ─── Buscar por ID ────────────────────────────────────────────
