@@ -10,6 +10,7 @@ import { FollowsModule } from "./follows/follows.module";
 import { FeedModule } from "./feed/feed.module";
 import { envValidationSchema } from "./config/env.validation";
 import { dataSourceOptions } from "./config/typeorm.config";
+import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { dataSourceOptions } from "./config/typeorm.config";
     CommentsModule,
     FollowsModule,
     FeedModule,
+    StorageModule,
   ],
 })
 export class AppModule {}

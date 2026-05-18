@@ -12,4 +12,7 @@ export const envValidationSchema = Joi.object({
   // JWT
   JWT_SECRET: Joi.string().min(32).required(),
   JWT_EXPIRES_IN: Joi.string().default("7d"),
+
+  SUPABASE_URL: Joi.string().required(),
+  SUPABASE_SERVICE_KEY: Joi.string().required(),
 });
