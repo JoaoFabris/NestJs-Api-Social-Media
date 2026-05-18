@@ -10,6 +10,7 @@ import * as bcrypt from "bcrypt";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { StorageService } from "src/storage/storage.service";
 
 //"essa classe pode ser gerenciada pelo sistema de injeção de dependências".
 //  Sem ele, se outro lugar tentar usar o UsersService no constructor, o NestJS vai lançar um erro porque não sabe como criar essa instância.
@@ -21,6 +22,7 @@ export class UsersService {
     //  O NestJS então injeta um objeto Repository<User> pronto pra uso — você nunca instancia isso manualmente.
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private readonly storageService: StorageService,
   ) {}
 
   //Criar um user
@@ -94,5 +96,18 @@ export class UsersService {
   async remove(id: string): Promise<void> {
     const user = await this.findOne(id); // já lança 404 se não existir
     await this.usersRepository.remove(user);
+  }
+
+  async updateAvatar(id: string, file: Express.Multer.File): Promise<User> {
+    const user = await this.findOne(id);
+
+    // Monta um caminho único por usuário — sobrescreve sempre o mesmo arquivo
+    // ex: "avatars/user-abc123/avatar.png"
+    const path = `user-${id}/avatar.${file.originalname.split(".").pop()}`;
+
+    const url = await this.storageService.uploadFile("avatars", path, file);
+
+    user.avatarUrl = url;
+    return this.usersRepository.save(user);
   }
 }
