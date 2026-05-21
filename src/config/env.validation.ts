@@ -15,5 +15,6 @@ export const envValidationSchema = Joi.object({
 
   SUPABASE_URL: Joi.string().required(),
   SUPABASE_SERVICE_KEY: Joi.string().required(),
+
   GEMINI_API_KEY: Joi.string().required(),
 });
