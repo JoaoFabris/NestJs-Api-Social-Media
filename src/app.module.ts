@@ -10,7 +10,8 @@ import { FollowsModule } from "./follows/follows.module";
 import { FeedModule } from "./feed/feed.module";
 import { envValidationSchema } from "./config/env.validation";
 import { dataSourceOptions } from "./config/typeorm.config";
-import { StorageModule } from './storage/storage.module';
+import { StorageModule } from "./storage/storage.module";
+import { AiModule } from "./ai/ai.module";
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { StorageModule } from './storage/storage.module';
       }),
     }),
 
+    AiModule,
     UsersModule,
     AuthModule,
     PostsModule,
