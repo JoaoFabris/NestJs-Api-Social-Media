@@ -1,11 +1,8 @@
 import { Controller, Post, Body, UseGuards } from "@nestjs/common";
 import { AiService } from "./ai.service";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard"; // ajuste o path se necessário
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { ApiTags, ApiOperation, ApiBearerAuth } from "@nestjs/swagger";
-
-class SuggestCaptionDto {
-  topic: string;
-}
+import { SuggestCaptionDto } from "./dto/suggest-caption.dto"; // 👈 import separado
 
 @ApiTags("ai")
 @ApiBearerAuth()
