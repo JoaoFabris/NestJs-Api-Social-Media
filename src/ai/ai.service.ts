@@ -33,4 +33,25 @@ export class AiService {
 
     return response.choices[0].message.content ?? "";
   }
+
+  async chat(message: string): Promise<string> {
+    const response = await this.client.chat.completions.create({
+      model: "llama-3.1-8b-instant",
+      max_tokens: 500,
+      messages: [
+        {
+          role: "system",
+          content: `Você é um assistente especialista em redes sociais. 
+  Ajude o usuário com dicas de engajamento, horários para postar, ideias de conteúdo e estratégias para crescer nas redes sociais. 
+  Seja direto e prático. Máximo 3 parágrafos.`,
+        },
+        {
+          role: "user",
+          content: message,
+        },
+      ],
+    });
+
+    return response.choices[0].message.content ?? "";
+  }
 }
