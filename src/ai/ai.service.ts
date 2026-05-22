@@ -14,7 +14,6 @@ export class AiService {
 
     this.client = new Groq({ apiKey });
   }
-
   async suggestCaption(topic: string): Promise<string> {
     const response = await this.client.chat.completions.create({
       model: "llama-3.1-8b-instant",
@@ -32,6 +31,6 @@ export class AiService {
       ],
     });
 
-    return response.choices[0].message.content;
+    return response.choices[0].message.content ?? "";
   }
 }
