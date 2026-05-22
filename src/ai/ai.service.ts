@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 
 @Injectable()
 export class AiService {
-  private genAI: GoogleGenerativeAI;
+  private client: Groq;
 
   constructor() {
     const apiKey = process.env.GROQ_API_KEY;
@@ -12,26 +12,26 @@ export class AiService {
       throw new Error("GROQ_API_KEY não definida");
     }
 
-    this.genAI = new GoogleGenerativeAI(apiKey);
+    this.client = new Groq({ apiKey });
   }
 
   async suggestCaption(topic: string): Promise<string> {
-    const model = this.genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-      systemInstruction:
-        "Você é um especialista em redes sociais. Responda APENAS com a legenda, sem explicações.",
+    const response = await this.client.chat.completions.create({
+      model: "llama-3.1-8b-instant",
+      max_tokens: 300,
+      messages: [
+        {
+          role: "system",
+          content:
+            "Você é um especialista em redes sociais. Responda APENAS com a legenda, sem explicações.",
+        },
+        {
+          role: "user",
+          content: `Crie uma legenda criativa e engajante para um post sobre: "${topic}". Máximo 150 caracteres.`,
+        },
+      ],
     });
 
-    const result = await model.generateContent(
-      `Crie uma legenda criativa e engajante para um post sobre: "${topic}". Máximo 150 caracteres.`,
-    );
-
-    const content = result.response.text();
-
-    if (!content) {
-      throw new Error("Resposta vazia do Gemini");
-    }
-
-    return content;
+    return response.choices[0].message.content;
   }
 }
