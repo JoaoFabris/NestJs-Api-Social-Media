@@ -17,7 +17,7 @@ export class AiService {
 
   async suggestCaption(topic: string): Promise<string> {
     const model = this.genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
+      model: "gemini-1.5-flash",
       systemInstruction:
         "Você é um especialista em redes sociais. Responda APENAS com a legenda, sem explicações.",
     });
