@@ -9,8 +9,8 @@ import { Repository } from "typeorm";
 import { Post } from "./entities/post.entity";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { UpdatePostDto } from "./dto/update-post.dto";
-import { PaginatedResponseDto } from "src/common/dto/paginated-response.dto";
-import { PaginationDto } from "src/common/dto/pagination.dto";
+import { PaginatedResponseDto } from "../common/dto/paginated-response.dto";
+import { PaginationDto } from "../common/dto/pagination.dto";
 
 @Injectable()
 export class PostsService {

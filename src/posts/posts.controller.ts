@@ -17,7 +17,7 @@ import { PostsService } from "./posts.service";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { UpdatePostDto } from "./dto/update-post.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { PaginationDto } from "src/common/dto/pagination.dto";
+import { PaginationDto } from "../common/dto/pagination.dto";
 
 @Controller("posts")
 @UseGuards(JwtAuthGuard) // todas as rotas de posts exigem login

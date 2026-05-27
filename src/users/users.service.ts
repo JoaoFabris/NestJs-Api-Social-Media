@@ -9,7 +9,7 @@ import { Repository } from "typeorm";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { StorageService } from "src/storage/storage.service";
+import { StorageService } from "../storage/storage.service";
 
 //"essa classe pode ser gerenciada pelo sistema de injeção de dependências".
 //  Sem ele, se outro lugar tentar usar o UsersService no constructor, o NestJS vai lançar um erro porque não sabe como criar essa instância.
