@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import ws from "ws";
 
 @Injectable()
 export class StorageService {
@@ -10,8 +11,14 @@ export class StorageService {
     this.supabase = createClient(
       this.config.get("SUPABASE_URL")!,
       this.config.get("SUPABASE_SERVICE_KEY")!,
+      {
+        realtime: {
+          transport: ws,
+        },
+      },
     );
   }
+
   async uploadFile(
     bucket: string,
     path: string,
@@ -25,7 +32,7 @@ export class StorageService {
       });
 
     if (error) {
-      console.error("Supabase error:", error); // 👈 adiciona isso
+      console.error("Supabase error:", error);
       throw new Error(error.message);
     }
 

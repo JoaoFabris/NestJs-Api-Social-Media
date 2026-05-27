@@ -12,6 +12,7 @@ import { envValidationSchema } from "./config/env.validation";
 import { dataSourceOptions } from "./config/typeorm.config";
 import { StorageModule } from "./storage/storage.module";
 import { AiModule } from "./ai/ai.module";
+import { SupabaseModule } from "./supabase/supabase.module";
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { AiModule } from "./ai/ai.module";
         synchronize: config.get("NODE_ENV") === "development",
       }),
     }),
-
+    SupabaseModule,
     AiModule,
     UsersModule,
     AuthModule,

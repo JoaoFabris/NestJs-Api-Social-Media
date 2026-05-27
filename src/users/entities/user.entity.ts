@@ -21,10 +21,6 @@ export class User {
   @Column({ nullable: true })
   website: string;
 
-  @Column()
-  @Exclude()
-  password: string; //  criptografar isso no Service
-
   @Column({ nullable: true })
   bio: string; // campo opcional
 

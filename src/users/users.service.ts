@@ -27,9 +27,8 @@ export class UsersService {
 
   //Criar um user
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const { email, username, password } = createUserDto;
+    const { email, username } = createUserDto;
 
-    // Verifica se email ou username já existem
     const existingUser = await this.usersRepository.findOne({
       where: [{ email }, { username }],
     });
@@ -38,14 +37,12 @@ export class UsersService {
       throw new ConflictException("Email ou username já está em uso");
     }
 
-    // Criptografa a senha antes de salvar
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    // Sem bcrypt, sem password — só dados de perfil
     const user = this.usersRepository.create({
-      ...createUserDto,
-      password: hashedPassword,
+      email,
+      username,
+      bio: createUserDto.bio,
     });
-
     return this.usersRepository.save(user);
   }
   // ─── Buscar todos ────────────────────────────────────────────
@@ -66,29 +63,39 @@ export class UsersService {
 
   // ─── Buscar por email (usado no Auth depois) ─────────────────
   async findByEmail(email: string): Promise<User> {
-    const user = await this.usersRepository
-      .createQueryBuilder("user")
-      .addSelect("user.password")
-      .where("user.email = :email", { email })
-      .getOne();
+    const user = await this.usersRepository.findOne({ where: { email } });
 
     if (!user) {
-      throw new NotFoundException("Credenciais inválidas");
+      throw new NotFoundException("Usuário não encontrado");
     }
 
     return user;
   }
 
+  async createProfile(data: {
+    id: string;
+    email: string;
+    username: string;
+  }): Promise<User> {
+    const existing = await this.usersRepository.findOne({
+      where: [{ email: data.email }, { username: data.username }],
+    });
+
+    if (existing)
+      throw new ConflictException("Email ou username já está em uso");
+
+    const user = this.usersRepository.create(data);
+    return this.usersRepository.save(user);
+  }
+
   // ─── Atualizar ───────────────────────────────────────────────
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id); // já lança 404 se não existir
+    const user = await this.findOne(id);
 
-    // Se estiver atualizando a senha, criptografa de novo
-    if (updateUserDto.password) {
-      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
-    }
+    // Remove password do update — Supabase gerencia isso
+    const { password, ...safeUpdate } = updateUserDto as any;
 
-    Object.assign(user, updateUserDto);
+    Object.assign(user, safeUpdate);
     return this.usersRepository.save(user);
   }
 
